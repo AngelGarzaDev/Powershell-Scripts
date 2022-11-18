@@ -1,6 +1,7 @@
 #This script will remove all Licenses and Azure Group Memberships for a single user.
 #
 #
+Connect-ExchangeOnline
 Connect-Graph -Scopes User.ReadWrite.All, Organization.Read.All, MailboxSettings.ReadWrite, GroupMember.ReadWrite.All, Directory.ReadWrite.All, Group.ReadWrite.All
 $ErrorActionPreference = "Stop"
 ############################################################################################
@@ -27,7 +28,7 @@ $orgName = get-mgorganization | select-object -ExpandProperty "DisplayName"
 #Remove Licenses
 foreach ($license in $licensesToRemove)
 {
-    Set-MgUserLicense -UserId $user -RemoveLicenses $license -AddLicenses -erroraction 'silentlycontinue'
+    Set-MgUserLicense -UserId $user -RemoveLicenses $license -AddLicenses @() -erroraction 'silentlycontinue'
 }
 #Remove Group Membership
 foreach ($group in $groupsToRemove)
@@ -37,7 +38,6 @@ foreach ($group in $groupsToRemove)
 ###################################################################################
 #This part of the script uses ExchangeOnline to set Auto Reply email, and converts to Shared mailbox
 #
-Connect-ExchangeOnline
 Set-MailboxAutoReplyConfiguration -Identity $user -AutoreplyState Enabled -InternalMessage "Hello, $name is no longer with SpawGlass. Please contact $managerName at $manager" -ExternalMessage "Hello, $name is no longer with $orgName. Please contact $managerName at $manager"
 Set-Mailbox -Identity $user -Type Shared
 Get-EXOMailboxStatistics $user
