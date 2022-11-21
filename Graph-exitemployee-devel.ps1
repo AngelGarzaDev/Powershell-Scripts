@@ -24,6 +24,13 @@ $groupsToRemove = Get-MgUserMemberOf -UserId $user | Select-Object -ExpandProper
 $orgName = get-mgorganization | select-object -ExpandProperty "DisplayName"
 #
 #
+###################################################################################
+#This part of the script uses ExchangeOnline to set Auto Reply email, and converts to Shared mailbox
+#
+Set-MailboxAutoReplyConfiguration -Identity $user -AutoreplyState Enabled -InternalMessage "Hello, $name is no longer with $orgName. Please contact $managerName at $manager" -ExternalMessage "Hello, $name is no longer with $orgName. Please contact $managerName at $manager"
+Set-Mailbox -Identity $user -Type Shared
+#
+#
 #####################################################################################
 #Remove Licenses
 foreach ($license in $licensesToRemove)
@@ -35,12 +42,5 @@ foreach ($group in $groupsToRemove)
 {
     Remove-MgGroupMemberByRef -GroupId $group -DirectoryObjectId $userObjectId -erroraction 'silentlycontinue'
 } 
-###################################################################################
-#This part of the script uses ExchangeOnline to set Auto Reply email, and converts to Shared mailbox
-#
-Set-MailboxAutoReplyConfiguration -Identity $user -AutoreplyState Enabled -InternalMessage "Hello, $name is no longer with SpawGlass. Please contact $managerName at $manager" -ExternalMessage "Hello, $name is no longer with $orgName. Please contact $managerName at $manager"
-Set-Mailbox -Identity $user -Type Shared
-Get-EXOMailboxStatistics $user
-#
-#
+
 Disconnect-ExchangeOnline -Confirm:$false; Disconnect-Graph
