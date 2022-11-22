@@ -20,7 +20,7 @@ $userObjectId = get-mguser -userid $user | Select-Object -ExpandProperty Id
 $licensesToRemove = Get-MgUserLicenseDetail -UserId $User | Select-Object -ExpandProperty SkuId
 #Create Alias to the User's current Group Membership
 $groupsToRemove = Get-MgUserMemberOf -UserId $user | Select-Object -ExpandProperty "Id"
-#Create Alias for the Organization's name
+#Create Alias for the Organization's name. To be used in auto reply email.
 $orgName = get-mgorganization | select-object -ExpandProperty "DisplayName"
 #
 #
