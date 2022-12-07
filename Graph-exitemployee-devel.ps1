@@ -1,6 +1,13 @@
 #This script will remove all Licenses and Azure Group Memberships for a single user.
 #
-#
+#Check to ensure script is runnin on Powershell version 7 or greater.
+If (($PSVersionTable).PSVersion -lt '7.0')
+{
+Write-Host "This script is only compatible with Powershell version 7 and greater."
+Start-Sleep -Seconds 10
+Exit
+}
+Write-Host "Connecting to Exchange."
 Connect-ExchangeOnline
 Connect-Graph -Scopes User.ReadWrite.All, Organization.Read.All, MailboxSettings.ReadWrite, GroupMember.ReadWrite.All, Directory.ReadWrite.All, Group.ReadWrite.All
 $ErrorActionPreference = "Stop"
@@ -27,7 +34,9 @@ $orgName = get-mgorganization | select-object -ExpandProperty "DisplayName"
 ###################################################################################
 #This part of the script uses ExchangeOnline to set Auto Reply email, and converts to Shared mailbox
 #
+Write-Host 'Setting Auto Reply Message'
 Set-MailboxAutoReplyConfiguration -Identity $user -AutoreplyState Enabled -InternalMessage "Hello, $name is no longer with $orgName. Please contact $managerName at $manager" -ExternalMessage "Hello, $name is no longer with $orgName. Please contact $managerName at $manager"
+Write-Host 'Setting mailbox as shared'
 Set-Mailbox -Identity $user -Type Shared
 #
 #
