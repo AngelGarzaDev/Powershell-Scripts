@@ -5,14 +5,14 @@ $ErrorActionPreference = "Stop"
 
 If (($PSVersionTable).PSVersion -lt '7.0')
 {
-Write-Host "`nThis script is only compatible with Powershell version 7 and greater."
-Start-Sleep -Seconds 10
-Exit
+    Write-Host "`nThis script is only compatible with Powershell version 7 and greater."
+    Start-Sleep -Seconds 10
+    Exit
 }
 Write-Host "`nConnecting to Exchange."
-Connect-ExchangeOnline
+Connect-ExchangeOnline -ShowBanner:$false
 Write-Host "`nConnecting to Microsoft Graph."
-Connect-Graph -Scopes User.ReadWrite.All, Organization.Read.All, MailboxSettings.ReadWrite, GroupMember.ReadWrite.All, Directory.ReadWrite.All, Group.ReadWrite.All
+Connect-Graph -Scopes User.ReadWrite.All, Organization.Read.All, MailboxSettings.ReadWrite, GroupMember.ReadWrite.All, Directory.ReadWrite.All, Group.ReadWrite.All | Out-Null
 ############################################################################################
 #This section of the script sets some of the necessary Aliases to be used later
 #Enter the User's email. Do not enter an email alias
@@ -59,6 +59,6 @@ foreach ($group in $groupsToRemove)
 } 
 
 Write-Host "Disconnecting from Tenant"
-Disconnect-ExchangeOnline -Confirm:$false; Disconnect-Graph
+Disconnect-ExchangeOnline -Confirm:$false; Disconnect-Graph | Out-Null
 
 Read-Host -Prompt "Press Enter to exit"
