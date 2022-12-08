@@ -1,20 +1,22 @@
 #This script will remove all Licenses and Azure Group Memberships for a single user.
 #
 #Check to ensure script is runnin on Powershell version 7 or greater.
+$ErrorActionPreference = "Stop"
+
 If (($PSVersionTable).PSVersion -lt '7.0')
 {
-Write-Host "This script is only compatible with Powershell version 7 and greater."
+Write-Host "`nThis script is only compatible with Powershell version 7 and greater."
 Start-Sleep -Seconds 10
 Exit
 }
-Write-Host "Connecting to Exchange."
+Write-Host "`nConnecting to Exchange."
 Connect-ExchangeOnline
+Write-Host "`nConnecting to Microsoft Graph."
 Connect-Graph -Scopes User.ReadWrite.All, Organization.Read.All, MailboxSettings.ReadWrite, GroupMember.ReadWrite.All, Directory.ReadWrite.All, Group.ReadWrite.All
-$ErrorActionPreference = "Stop"
 ############################################################################################
 #This section of the script sets some of the necessary Aliases to be used later
 #Enter the User's email. Do not enter an email alias
-$user = Read-Host "Exit Employee's Email"
+$user = Read-Host "`nEnter the Exit Employee's Email"
 #Create Alias to the User's Name
 $name = get-mguser -userid $user | Select-Object -ExpandProperty Displayname
 #Create Alias for the User's Manger (UPN)
@@ -42,14 +44,21 @@ Set-Mailbox -Identity $user -Type Shared
 #
 #####################################################################################
 #Remove Licenses
+Write-Host "Removing licenses: $licensesToRemove"
 foreach ($license in $licensesToRemove)
 {
     Set-MgUserLicense -UserId $user -RemoveLicenses $license -AddLicenses @() -erroraction 'silentlycontinue'
 }
+
 #Remove Group Membership
 foreach ($group in $groupsToRemove)
 {
     Remove-MgGroupMemberByRef -GroupId $group -DirectoryObjectId $userObjectId -erroraction 'silentlycontinue'
+    $removinggroup = Get-MgGroup -GroupId $group | Select-Object -ExpandProperty "DisplayName"
+    Write-Host "Removing group: $removinggroup"
 } 
 
+Write-Host "Disconnecting from Tenant"
 Disconnect-ExchangeOnline -Confirm:$false; Disconnect-Graph
+
+Read-Host -Prompt "Press Enter to exit"
