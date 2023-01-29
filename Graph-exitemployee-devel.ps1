@@ -64,7 +64,6 @@ $orgName = get-mgorganization | select-object -ExpandProperty "DisplayName"
 
 ###################################################################################
 #This part of the script uses ExchangeOnline to set Auto Reply email, and converts to Shared mailbox
-#
 Write-Host 'Setting Auto Reply Message'
 Set-MailboxAutoReplyConfiguration -Identity $user -AutoreplyState Enabled -InternalMessage "Hello, $name is no longer with $orgName. Please contact $managerName at $manager" -ExternalMessage "Hello, $name is no longer with $orgName. Please contact $managerName at $manager"
 Write-Host 'Setting mailbox as shared'
