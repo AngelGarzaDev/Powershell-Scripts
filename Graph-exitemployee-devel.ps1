@@ -2,7 +2,7 @@
 
 
 
-#Check to ensure script is runnin on Powershell version 7 or greater.
+#Check to ensure script is running on Powershell version 7 or greater.
 $ErrorActionPreference = "Stop"
 
 If (($PSVersionTable).PSVersion -lt '7.0')
@@ -10,6 +10,28 @@ If (($PSVersionTable).PSVersion -lt '7.0')
     Write-Host "`nThis script is only compatible with Powershell version 7 and greater."
     Start-Sleep -Seconds 10
     Exit
+}
+
+
+##############################################################################################
+#Check for Exchange Online and Microsoft Graph
+if (Get-Module -ListAvailable ExchangeOnlineManagement)
+{
+    Write-Host "Exchange Online is Installed"
+}
+else {
+    Install-Module -Name ExchangeOnlineManagement -Force
+    Write-Host "Exchange Online has been Installed"
+}
+
+
+if (Get-Module -ListAvailable Microsoft.Graph)
+{
+    Write-Host "Microsoft Graph is Installed"
+}
+else {
+    Install-Module -Name Microsoft.Graph -Force
+    Write-Host "Microsoft Graph has been Installed"
 }
 
 
