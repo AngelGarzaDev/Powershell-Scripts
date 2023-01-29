@@ -1,7 +1,6 @@
 #This script will remove all Licenses and Azure Group Memberships for a single user.
 
 
-
 #Check to ensure script is running on Powershell version 7 or greater.
 $ErrorActionPreference = "Stop"
 
