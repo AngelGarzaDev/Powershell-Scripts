@@ -85,14 +85,8 @@ foreach ($group in $groupsToRemove)
     Write-Host "Removing group: $removinggroup"
 }
 
-<<<<<<< HEAD
-#Write-Host "Disconnecting from Tenant"
-#Disconnect-ExchangeOnline -Confirm:$false; Disconnect-Graph | Out-Null
-
-=======
 
 ####################################################################################
 Write-Host "Disconnecting from Tenant"
 Disconnect-ExchangeOnline -Confirm:$false; Disconnect-Graph | Out-Null
->>>>>>> a00f7d8b66337304dd457b78677769a2575be48a
 Read-Host -Prompt "Press Enter to exit"
