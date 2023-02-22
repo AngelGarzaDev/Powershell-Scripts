@@ -1,9 +1,18 @@
-if (Get-Module -ListAvailable -Name ExchangeOnlineManagement)
+if (Get-Module -ListAvailable ExchangeOnlineManagement)
 {
-    Write-Host "Exchange Online Module is Installed"
+    Write-Host "Exchange Online is Installed"
 }
-else 
+else {
+    Install-Module -Name ExchangeOnlineManagement -Force
+    Write-Host "Exchange Online has been Installed"
+}
+
+
+if (Get-Module -ListAvailable Microsoft.Graph)
 {
-    Write-Host "Module is NOT Installed"
+    Write-Host "Microsoft Graph is Installed"
 }
-Start-Sleep -Seconds 10
+else {
+    Install-Module -Name Microsoft.Graph -Force
+    Write-Host "Microsoft Graph has been Installed"
+}

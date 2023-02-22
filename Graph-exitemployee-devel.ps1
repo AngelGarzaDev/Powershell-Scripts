@@ -1,6 +1,7 @@
 #This script will remove all Licenses and Azure Group Memberships for a single user.
-#
-#Check to ensure script is runnin on Powershell version 7 or greater.
+
+
+#Check to ensure script is running on Powershell version 7 or greater.
 $ErrorActionPreference = "Stop"
 
 If (($PSVersionTable).PSVersion -lt '7.0')
@@ -9,6 +10,31 @@ If (($PSVersionTable).PSVersion -lt '7.0')
     Start-Sleep -Seconds 10
     Exit
 }
+
+
+##############################################################################################
+#Check for Exchange Online and Microsoft Graph
+if (Get-Module -ListAvailable ExchangeOnlineManagement)
+{
+    Write-Host "Exchange Online is Installed"
+}
+else {
+    Install-Module -Name ExchangeOnlineManagement -Force
+    Write-Host "Exchange Online has been Installed"
+}
+
+
+if (Get-Module -ListAvailable Microsoft.Graph)
+{
+    Write-Host "Microsoft Graph is Installed"
+}
+else {
+    Install-Module -Name Microsoft.Graph -Force
+    Write-Host "Microsoft Graph has been Installed"
+}
+
+
+########################################################################################
 Write-Host "`nConnecting to Exchange."
 Connect-ExchangeOnline -ShowBanner:$false
 Write-Host "`nConnecting to Microsoft Graph."
@@ -33,17 +59,16 @@ $licensesToRemove = Get-MgUserLicenseDetail -UserId $User | Select-Object -Expan
 $groupsToRemove = Get-MgUserMemberOf -UserId $user | Select-Object -ExpandProperty "Id"
 #Create Alias for the Organization's name. To be used in auto reply email.
 $orgName = get-mgorganization | select-object -ExpandProperty "DisplayName"
-#
-#
+
+
 ###################################################################################
 #This part of the script uses ExchangeOnline to set Auto Reply email, and converts to Shared mailbox
-#
 Write-Host 'Setting Auto Reply Message'
 Set-MailboxAutoReplyConfiguration -Identity $user -AutoreplyState Enabled -InternalMessage "Hello, $name is no longer with $orgName. Please contact $managerName at $manager" -ExternalMessage "Hello, $name is no longer with $orgName. Please contact $managerName at $manager"
 Write-Host 'Setting mailbox as shared'
 Set-Mailbox -Identity $user -Type Shared
-#
-#
+
+
 #####################################################################################
 #Remove Licenses
 Write-Host "Removing licenses: $licensesToRemove"
@@ -58,9 +83,16 @@ foreach ($group in $groupsToRemove)
     Remove-MgGroupMemberByRef -GroupId $group -DirectoryObjectId $userObjectId -erroraction 'silentlycontinue'
     $removinggroup = Get-MgGroup -GroupId $group | Select-Object -ExpandProperty "DisplayName"
     Write-Host "Removing group: $removinggroup"
-} 
+}
 
+<<<<<<< HEAD
 #Write-Host "Disconnecting from Tenant"
 #Disconnect-ExchangeOnline -Confirm:$false; Disconnect-Graph | Out-Null
 
+=======
+
+####################################################################################
+Write-Host "Disconnecting from Tenant"
+Disconnect-ExchangeOnline -Confirm:$false; Disconnect-Graph | Out-Null
+>>>>>>> a00f7d8b66337304dd457b78677769a2575be48a
 Read-Host -Prompt "Press Enter to exit"
