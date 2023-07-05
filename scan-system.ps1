@@ -1,2 +1,2 @@
-DISM.exe /Online /Cleanup-image /Restorehealth & sfc /scannow & Write-Output y|chkdsk C: /f
 
+echo y|chkdsk C: /f & DISM.exe /Online /Cleanup-image /Restorehealth & sfc /scannow
